@@ -1257,6 +1257,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtksourceview-2-add-default-directory.patch \
   %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
   %D%/packages/patches/gzdoom-find-system-libgme.patch	\
+  %D%/packages/patches/havoqgt-fix-build-errors.patch		\
   %D%/packages/patches/hdf4-architectures.patch 		\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
@@ -1491,6 +1492,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mesa-opencl-all-targets.patch		\
   %D%/packages/patches/mesa-skip-tests.patch			\
   %D%/packages/patches/meson-allow-dirs-outside-of-prefix.patch	\
+  %D%/packages/patches/metall-add-language.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mia-fix-boost-headers.patch		\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
