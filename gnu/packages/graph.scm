@@ -659,3 +659,42 @@ level of performance that is comparable (both in memory usage and computation
 time) to that of a pure C/C++ library.")
     (home-page "https://graph-tool.skewed.de/")
     (license license:lgpl3+)))
+
+(define-public snap-graph
+  (let* ((commit "c9522b37931d05bd43b027ca239268c1d131862d")
+         (revision "1"))
+    (package
+      (name "snap-graph")
+      (version (git-version "6.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/snap-stanford/snap")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09znpkh47398632f7qdk9x3cjxb0crc5k3bniihq1ldbnca7zafy"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'check
+             (lambda _ (invoke "make" "TestAll")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "keynav" (string-append out "/bin"))
+                 (install-file "keynavrc" (string-append out "/etc"))))))))
+      (inputs
+       (list googletest-1.8))
+      (native-inputs
+       (list gnuplot graphviz))
+      (propagated-inputs
+       (list gnuplot graphviz))
+      (synopsis "")
+      (description "
+")
+      (home-page "https://github.com/snap-stanford/snap")
+      (license license:bsd-3))))
