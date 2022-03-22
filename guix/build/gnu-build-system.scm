@@ -374,7 +374,7 @@ makefiles."
   "^(test-?suite\\.log|LastTestFailed\\.log)$")
 
 (define* (check #:key target (make-flags '()) (tests? (not target))
-                (test-target "check") (parallel-tests? #t)
+                (test-command "make") (test-target "check") (parallel-tests? #t)
                 (test-suite-log-regexp %test-suite-log-regexp)
                 #:allow-other-keys)
   (if tests?
@@ -384,7 +384,7 @@ makefiles."
                           (current-error-port))
                  (dump-file-contents "." test-suite-log-regexp)
                  (raise c)))
-        (apply invoke "make" test-target
+        (apply invoke test-command test-target
                `(,@(if parallel-tests?
                        `("-j" ,(number->string (parallel-job-count)))
                        '())

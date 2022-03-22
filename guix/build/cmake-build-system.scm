@@ -77,11 +77,10 @@
       (format #t "running 'cmake' with arguments ~s~%" args)
       (apply invoke "cmake" args))))
 
-(define* (check #:key (tests? #t) (parallel-tests? #t) (test-target "test")
-                #:allow-other-keys)
+(define* (check #:key (tests? #t) (parallel-tests? #t) #:allow-other-keys)
   (let ((gnu-check (assoc-ref gnu:%standard-phases 'check)))
     (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-    (gnu-check #:tests? tests? #:test-target test-target
+    (gnu-check #:tests? tests? #:test-command "ctest"
               #:parallel-tests? parallel-tests?)))
 
 (define %standard-phases
