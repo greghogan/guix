@@ -707,6 +707,54 @@ console.")
 application (for console or X terminals) and requires ncurses.")
     (license license:gpl2)))
 
+(define-public btop
+  (package
+    (name "btop")
+    (version "1.2.6")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aristocratos/btop")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03nd34q1w01visd2bg7mxrcjn0s6lnbm4s0vsfsj2mfv1rvyjl5b"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure))
+      #:make-flags
+      #~(list (string-append "PREFIX=" #$output))))
+    (home-page "https://github.com/aristocratos/btop")
+    (synopsis "Resource monitor for processor, memory, disks, network and processes")
+    (description "Resource monitor that shows usage and stats
+for processor, memory, disks, network and processes.
+
+Features
+@itemize
+@item Game inspired menu system
+@item Full mouse support: all buttons with a highlighted key are clickable and
+mouse scroll works in process list and menu boxes
+@item Fast and responsive UI with arrow key process selection
+@item Function for showing detailed stats for selected process
+@item Ability to filter processes
+@item Easy switching between sorting options
+@item Tree view of processes
+@item Send any signal to selected process
+@item Menu for changing config file options
+@item Auto scaling graph for network usage
+@item Shows I/O activity and speeds for disks
+@item Battery meter
+@item Selectable symbols for the graphs
+@item Custom presets
+@end itemize")
+    (license license:asl2.0)))
+
 (define-public bashtop
   (package
     (name "bashtop")
