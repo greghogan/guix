@@ -1869,3 +1869,35 @@ std::filesystem compatible helper library, based on the C++17 and C++20 specs,
 but implemented for C++11, C++14, C++17 or C++20.")
     (home-page "https://github.com/gulrak/filesystem")
     (license license:expat)))
+
+(define-public cppinsights
+  (package
+    (name "cppinsights")
+    (version "0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/andreasfertig/cppinsights")
+                    (commit (string-append "v_" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1i8xq3in2w0y762kp722cyh7r5xsi4q2j3fsbh63gyk9b61caryb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Use Clang instead of GCC.
+         (add-before 'configure 'prepare-build-environment
+           (lambda _
+             (setenv "AR" "llvm-ar")
+             (setenv "NM" "llvm-nm")
+             (setenv "CC" "clang")
+             (setenv "CXX" "clang++"))))))
+    (native-inputs (list python))
+    (inputs (list clang-12 doxygen))
+    (synopsis "")
+    (description "")
+    (home-page "https://github.com/andreasfertig/cppinsights")
+    (license license:expat)))
