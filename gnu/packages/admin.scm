@@ -777,7 +777,8 @@ mouse scroll works in process list and menu boxes
     (synopsis "Linux/OSX/FreeBSD resource monitor")
     (description "Resource monitor that shows usage and stats for processor,
 memory, disks, network and processes.")
-    (license license:asl2.0)))
+    (license license:asl2.0)
+    (properties `((superseded . ,btop)))))
 
 (define-public bpytop
   (package
