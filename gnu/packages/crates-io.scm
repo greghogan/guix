@@ -73122,3 +73122,27 @@ way to convert simple shell commands to windows batch commands.")
     (description "A library for parsing and serializing HTML and XML documents
 and traversing, manipulating, and querying the document tree.")
     (license license:expat)))
+
+(define-public htmlq
+  (package
+    (name "htmlq")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "htmlq" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0912cdkz5xji1hzfj1cf42zh1kd860b52xmwwhb7q2jhp6qk25jh"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-clap" ,rust-clap-2)
+         ("rust-html5ever" ,rust-html5ever-0.25)
+         ("rust-kuchiki" ,rust-kuchiki-0.8)
+         ("rust-lazy-static" ,rust-lazy-static-1)
+         ("rust-url" ,rust-url-2))))
+    (home-page "https://github.com/mgdm/htmlq")
+    (synopsis "Like jq, but for HTML")
+    (description "Extract content from HTML files using CSS selectors.")
+    (license license:expat)))
