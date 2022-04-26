@@ -812,7 +812,8 @@ memory, disks, network and processes.")
     (description "Resource monitor that shows usage and stats for processor,
 memory, disks, network and processes.  It's a Python port and continuation of
 @command{bashtop}.")
-    (license license:asl2.0)))
+    (license license:asl2.0)
+    (properties `((superseded . ,bashtop)))))
 
 (define-public pies
   (package
