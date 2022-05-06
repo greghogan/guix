@@ -3406,10 +3406,10 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-9))
 
 (define-public gcc-toolchain-10
-  gcc-toolchain)
+  (make-gcc-toolchain gcc-10))
 
 (define-public gcc-toolchain-11
-  (make-gcc-toolchain gcc-11))
+  gcc-toolchain)
 
 (define-public gcc-toolchain-12
   (make-gcc-toolchain gcc-12))
