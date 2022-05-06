@@ -9693,7 +9693,7 @@ version control checkout), and it ignores other parameters.  The
 @code{configure} phase only cares about the @code{outputs} parameter, an
 alist mapping package output names to their store file name
 (@pxref{Packages with Multiple Outputs}).  It extracts the file name of
-for @code{out}, the default output, and passes it to
+@code{out}, the default output, and passes it to
 @command{./configure} as the installation prefix, meaning that
 @command{make install} will eventually copy all the files in that
 directory (@pxref{Configuration, configuration and makefile
