@@ -21507,14 +21507,14 @@ file system events on Linux.")
 (define-public python-more-itertools
   (package
     (name "python-more-itertools")
-    (version "8.2.0")
+    (version "8.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "more-itertools" version))
        (sha256
         (base32
-         "01x5nwm1zxmnd06cllbdd095xxc2nd25ing1a726m2kd30rbkpdi"))))
+         "03zcpw9m7nz7kv1vj1896rafychf35dcs5zjyqjxjsdilnh02ad4"))))
     (build-system python-build-system)
     (home-page "https://github.com/erikrose/more-itertools")
     (synopsis "More routines for operating on iterables, beyond itertools")
