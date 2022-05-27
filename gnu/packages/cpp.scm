@@ -59,6 +59,7 @@
   #:use-module (guix modules)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
@@ -1869,3 +1870,53 @@ std::filesystem compatible helper library, based on the C++17 and C++20 specs,
 but implemented for C++11, C++14, C++17 or C++20.")
     (home-page "https://github.com/gulrak/filesystem")
     (license license:expat)))
+
+(define-public avx-turbo
+  (let ((commit "4a04a454feedb6402cd9d85fa6fda4d9c7ba47b4")
+        (revision "0"))
+    (package
+      (name "avx-turbo")
+      (version (git-version "0.0" revision commit))
+      (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/travisdowns/avx-turbo")
+                    (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06wcknyfibfcjq5703fyzlxd6p4isaphyjx05s1vwz42cg3dp9zp"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled software.
+                  (for-each delete-file-recursively
+                            '("./nasm-2.13.03" "./test/catch.hpp"))
+                  (substitute* (find-files "test")
+                   (("#include \"catch.hpp\"") "#include <catch2/catch.hpp>"))))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "unit-test"
+         #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                            (string-append "ASM=nasm"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+;           (add-after 'unpack 'remove-march
+;             (lambda _
+;               (substitute* "Makefile"
+;                 (("ifneq ($(CPU_ARCH),)") "if false"))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Install nothing but the executable.
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "avx-turbo"
+                               (string-append out "/bin"))))))))
+      (native-inputs (list nasm))
+      (inputs (list catch-framework2))
+      (properties '((tunable? . #t)))
+      (synopsis "")
+      (description "
+")
+      (home-page "https://github.com/travisdowns/avx-turbo")
+      (license license:expat))))
