@@ -10,6 +10,7 @@
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2022 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -659,3 +660,23 @@ level of performance that is comparable (both in memory usage and computation
 time) to that of a pure C/C++ library.")
     (home-page "https://graph-tool.skewed.de/")
     (license license:lgpl3+)))
+
+(define-public lagraph
+  (package
+    (name "lagraph")
+    (version "16Mar2022")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/GraphBLAS/LAGraph")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0m1yivq53f93sbd1djpagj0rjas16q5jrqss3awk1fckcpynyahx"))))
+    (build-system cmake-build-system)
+    (inputs (list suitesparse))
+    (synopsis "")
+    (description "")
+    (home-page "https://github.com/GraphBLAS/LAGraph")
+    (license license:bsd-2)))
