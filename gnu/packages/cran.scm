@@ -33459,3 +33459,22 @@ interface.")
 purposes, illustrating/testing meta-analytic methods, and validating published
 analyses.")
     (license license:gpl2+)))
+
+(define-public r-mathjaxr
+  (package
+    (name "r-mathjaxr")
+    (version "1.6-0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mathjaxr" version))
+              (sha256
+               (base32
+                "0yf1sfkb2kjsplipl2v4k2gp20li9xzsynclg228sy0v243pdi7c"))))
+    (properties `((upstream-name . "mathjaxr")))
+    (build-system r-build-system)
+    (home-page "https://github.com/wviechtb/mathjaxr")
+    (synopsis "Using 'Mathjax' in Rd Files")
+    (description
+     "This package provides 'MathJax' and macros to enable its use within Rd files for
+rendering equations in the HTML help files.")
+    (license license:gpl3)))
