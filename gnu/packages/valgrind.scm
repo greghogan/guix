@@ -148,17 +148,3 @@ also use Valgrind to build new tools.")
                       (string-length "/usr/lib/debug")
                       1))))))))))
    (properties '())))
-
-(define-public valgrind-3.18
-  (package
-    (inherit valgrind/interactive)
-    (version "3.18.1")
-    (source (origin
-              (inherit (package-source valgrind/interactive))
-              (uri (list (string-append "https://sourceware.org/pub/valgrind"
-                                        "/valgrind-" version ".tar.bz2")
-                         (string-append "ftp://sourceware.org/pub/valgrind"
-                                        "/valgrind-" version ".tar.bz2")))
-              (sha256
-               (base32
-                "1xgph509i6adv9w2glviw3xrmlz0dssg8992hbvxsbkp7ahrm180"))))))
