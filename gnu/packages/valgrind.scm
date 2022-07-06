@@ -79,7 +79,7 @@
                #t))))))
     (native-inputs
      (list perl))
-    (home-page "https://www.valgrind.org/")
+    (home-page "https://valgrind.org/")
     (synopsis "Debugging and profiling tool suite")
     (description
      "Valgrind is an instrumentation framework for building dynamic analysis
@@ -96,7 +96,7 @@ also use Valgrind to build new tools.")
 (define-public valgrind/interactive
   (package/inherit
    valgrind
-   (version "3.17.0")
+   (version "3.19.0")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://sourceware.org/pub/valgrind"
@@ -105,7 +105,7 @@ also use Valgrind to build new tools.")
                                        "/valgrind-" version ".tar.bz2")))
              (sha256
               (base32
-               "18l5jbk301j3462gipqn9bkfx44mdmwn0pwr73r40gl1irkfqfmd"))
+               "00lgfgb38xbrilkw6xvqk284dcnnnhbcq03kpvvkyj0sdx438pnx"))
              (patches (search-patches
                        "valgrind-enable-arm.patch"
                        "valgrind-fix-default-debuginfo-path.patch"))))
