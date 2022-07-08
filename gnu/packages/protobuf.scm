@@ -180,7 +180,11 @@ internal RPC protocols and file formats.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "040rcs9fpv4bslhiy43v7dcrzakz4vwwpyqg4jp8bn24sl95ci7f"))))))
+                "040rcs9fpv4bslhiy43v7dcrzakz4vwwpyqg4jp8bn24sl95ci7f"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'disable-broken-tests))))))
 
 (define-public protobuf-c
   (package
