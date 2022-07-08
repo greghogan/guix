@@ -12231,76 +12231,67 @@ game.")  ;thanks to Debian for description
       (license license:gpl2+))))
 
 (define-public pokerth
-  (package
-    (name "pokerth")
-    (version "1.1.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pokerth/pokerth/"
-                           version "/pokerth-" version ".tar.gz"))
-       (sha256
-        (base32 "0yi9bj3k8yc1gkwmaf14zbbvvn13n54n1dli8k6j1pkph3p3vjq2"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Remove bundled websocketpp.
-           (delete-file-recursively "src/third_party/websocketpp")
-           (substitute* "pokerth_lib.pro"
-             (("src/third_party/websocketpp")
-              ""))
-           #t))))
-    (build-system qt-build-system)
-    (inputs
-     `(("boost" ,boost)
-       ("curl" ,curl)
-       ("gsasl" ,gsasl)
-       ("libgcrypt" ,libgcrypt)
-       ("libircclient" ,libircclient)
-       ("protobuf" ,protobuf-2)         ; remove package when no longer needed
-       ("qtbase" ,qtbase-5)
-       ("sdl" ,(sdl-union (list sdl sdl-mixer)))
-       ("sqlite" ,sqlite)
-       ("tinyxml" ,tinyxml)
-       ("websocketpp" ,websocketpp)
-       ("zlib" ,zlib)))
-    (arguments
-     `(#:tests? #f ; No test suite
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* (find-files "." "\\.pro$")
-               (("/opt/gsasl")
-                (assoc-ref inputs "gsasl"))
-               (("\\$\\$\\{PREFIX\\}/include/libircclient")
-                (search-input-directory inputs "/include/libircclient"))
-               (("LIB_DIRS =")
-                (string-append "LIB_DIRS = "
-                               (assoc-ref inputs "boost") "/lib")))
-             #t))
-         (add-after 'unpack 'fix-build
-           (lambda _
-             ;; Fixes for Boost versions >= 1.66.
-             (substitute* '("src/net/common/clientthread.cpp"
-                            "src/net/serveraccepthelper.h")
-               (("boost::asio::socket_base::non_blocking_io command\\(true\\);")
-                "")
-               (("newSock->io_control\\(command\\);")
-                "newSock->non_blocking(true);")
-               (("acceptedSocket->io_control\\(command\\);")
-                "acceptedSocket->non_blocking(true);"))
-             #t))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "qmake" "pokerth.pro" "CONFIG+=client"
-                     (string-append "PREFIX=" (assoc-ref outputs "out"))))))))
-    (home-page "https://www.pokerth.net")
-    (synopsis "Texas holdem poker game")
-    (description
-     "With PokerTH you can play the Texas holdem poker game, either against
+  (let ((commit "8e6088e425ace3bb31c1dfc3231bff74891e3e94")
+        (revision "0"))
+    (package
+      (name "pokerth")
+      (version "1.1.2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/pokerth/pokerth")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1i7z0zc3sbws1bpgn1rd9nxfin121kl81d0as6f10wlrzndsn3sf"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove bundled websocketpp.
+             (delete-file-recursively "src/third_party/websocketpp")
+             (substitute* "pokerth_lib.pro"
+               (("src/third_party/websocketpp")
+                ""))
+             #t))))
+      (build-system qt-build-system)
+      (inputs
+       `(("boost" ,boost)
+         ("curl" ,curl)
+         ("gsasl" ,gsasl)
+         ("libgcrypt" ,libgcrypt)
+         ("libircclient" ,libircclient)
+         ("protobuf" ,protobuf-2)         ; remove package when no longer needed
+         ("qtbase" ,qtbase-5)
+         ("sdl" ,(sdl-union (list sdl sdl-mixer)))
+         ("sqlite" ,sqlite)
+         ("tinyxml" ,tinyxml)
+         ("websocketpp" ,websocketpp)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:tests? #f ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* (find-files "." "\\.pro$")
+                 (("/opt/gsasl")
+                  (assoc-ref inputs "gsasl"))
+                 (("LIB_DIRS =")
+                  (string-append "LIB_DIRS = "
+                                 (assoc-ref inputs "boost") "/lib")))
+               #t))
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "qmake" "pokerth.pro" "CONFIG+=client"
+                       (string-append "PREFIX=" (assoc-ref outputs "out"))))))))
+      (home-page "https://www.pokerth.net")
+      (synopsis "Texas holdem poker game")
+      (description
+       "With PokerTH you can play the Texas holdem poker game, either against
 computer opponents or against real players online.")
-    (license license:agpl3+)))
+      (license license:agpl3+))))
 
 (define-public xblackjack
   (package
