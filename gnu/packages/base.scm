@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022 zamfofex <zamfofex@twdb.moe>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -709,16 +710,14 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.33")
+   (version "2.35")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "1zvp0qdfbdyqrzydz18d9zg3n5ygy8ps7cmny1bvsp8h1q05c99f"))
-            (patches (search-patches "glibc-ldd-powerpc.patch"
-                                     "glibc-ldd-x86_64.patch"
-                                     "glibc-dl-cache.patch"
+              "0bpm1kfi09dxl4c6aanc5c9951fmf6ckkzay60cx7k37dcpp68si"))
+            (patches (search-patches "glibc-dl-cache.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
@@ -753,6 +752,7 @@ the store.")
       #:validate-runpath? #f
 
       #:modules ((ice-9 ftw)
+                 (srfi srfi-1)
                  (srfi srfi-26)
                  (guix build utils)
                  (guix build gnu-build-system))
@@ -867,13 +867,19 @@ the store.")
                  (add-after 'install 'move-static-libs
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Move static libraries to the "static" output.
+
+                     (define empty-static-libraries '("libpthread.a" "libdl.a" "libutil.a" "libanl.a"))
+                     (define (empty-static-library? file)
+                       (any (lambda (s) (string=? file s)) empty-static-libraries))
+
                      (define (static-library? file)
                        ;; Return true if FILE is a static library.  The
                        ;; "_nonshared.a" files are referred to by libc.so,
                        ;; libpthread.so, etc., which are in fact linker
                        ;; scripts.
                        (and (string-suffix? ".a" file)
-                            (not (string-contains file "_nonshared"))))
+                            (not (string-contains file "_nonshared"))
+                            (not (empty-static-library? file))))
 
                      (define (linker-script? file)
                        ;; Guess whether FILE, a ".a" file, is actually a
@@ -884,6 +890,7 @@ the store.")
                      (let* ((out    (assoc-ref outputs "out"))
                             (lib    (string-append out "/lib"))
                             (files  (scandir lib static-library?))
+                            (files2 (scandir lib empty-static-library?))
                             (static (assoc-ref outputs "static"))
                             (slib   (string-append static "/lib")))
                        (mkdir-p slib)
@@ -891,6 +898,10 @@ the store.")
                                    (rename-file (string-append lib "/" base)
                                                 (string-append slib "/" base)))
                                  files)
+                       (for-each (lambda (base)
+                                   (copy-file (string-append lib "/" base)
+                                              (string-append slib "/" base)))
+                                 files2)
 
                        ;; Usually libm.a is a linker script so we need to
                        ;; change the file names in there to refer to STATIC
