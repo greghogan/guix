@@ -711,6 +711,8 @@ It also includes runtime support libraries for these languages.")
                (base32
                 "0ywws66myjxcwsmla721g35d2ymlckq6ii7j9av0477ki5467zb2"))
               (patches (search-patches "gcc-12-strmov-store-file-names.patch"
+                                       "gcc-11-fenv-header-wrapper.patch"
+                                       "gcc-11-remove-utf8-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))))
