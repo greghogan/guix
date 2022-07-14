@@ -720,7 +720,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-11)
+(define-public gcc gcc-12)
 
 
 ;;;
@@ -1111,7 +1111,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-12 "gcc-objc" '("objc")
               %objc-search-paths))
 
-(define-public gcc-objc gcc-objc-11)
+(define-public gcc-objc gcc-objc-12)
 
 (define %objc++-search-paths
   (list (search-path-specification
@@ -1161,7 +1161,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-12 "gcc-objc++" '("obj-c++")
               %objc++-search-paths))
 
-(define-public gcc-objc++ gcc-objc++-11)
+(define-public gcc-objc++ gcc-objc++-12)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
