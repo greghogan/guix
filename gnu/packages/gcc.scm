@@ -685,7 +685,9 @@ It also includes runtime support libraries for these languages.")
             (sha256
              (base32
               "0fdclcwf728wbq52vphfcjywzhpsjp3kifzj3pib3xcihs0z4z5l"))
-            (patches (search-patches "gcc-9-strmov-store-file-names.patch"
+            (patches (search-patches "gcc-11-fenv-header-wrapper.patch"
+                                     "gcc-11-remove-utf8-file-names.patch"
+                                     "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))

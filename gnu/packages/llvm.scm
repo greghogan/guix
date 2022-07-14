@@ -633,11 +633,7 @@ of programming tools as well as libraries with equivalent functionality.")
           #~(modify-phases #$phases
               (add-after 'unpack 'change-directory
                 (lambda _
-                  (chdir "compiler-rt")))))))
-      (native-inputs
-       `(;; FIXME: libfuzzer fails to build with GCC 10.
-         ("gcc" ,gcc-11)
-         ,@(package-native-inputs template))))))
+                  (chdir "compiler-rt"))))))))))
 
 (define-public clang-14
   (let ((template

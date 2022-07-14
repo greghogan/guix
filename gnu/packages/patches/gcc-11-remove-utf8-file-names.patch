@@ -1,0 +1,42 @@
+The x86-64 Guile 2.0.9 bootstrap binary (released 2013) configured in
+gnu/packages/bootstrap.scm does not handle the following files with UTF-8
+filenames.
+
+diff --git "a/gcc/testsuite/go.test/test/fixedbugs/issue27836.dir/\303\204foo.go" "b/gcc/testsuite/go.test/test/fixedbugs/issue27836.dir/\303\204foo.go"
+deleted file mode 100644
+index 8b6a814..0000000
+--- "a/gcc/testsuite/go.test/test/fixedbugs/issue27836.dir/\303\204foo.go"
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package Äfoo
+-
+-var ÄbarV int = 101
+-
+-func Äbar(x int) int {
+-	defer func() { ÄbarV += 3 }()
+-	return Äblix(x)
+-}
+-
+-func Äblix(x int) int {
+-	defer func() { ÄbarV += 9 }()
+-	return ÄbarV + x
+-}
+diff --git "a/gcc/testsuite/go.test/test/fixedbugs/issue27836.dir/\303\204main.go" "b/gcc/testsuite/go.test/test/fixedbugs/issue27836.dir/\303\204main.go"
+deleted file mode 100644
+index 25d2c71..0000000
+--- "a/gcc/testsuite/go.test/test/fixedbugs/issue27836.dir/\303\204main.go"
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package main
+-
+-import (
+-	"fmt"
+-
+-	"./Äfoo"
+-	Äblix "./Äfoo"
+-)
+-
+-func main() {
+-	fmt.Printf("Äfoo.Äbar(33) returns %v\n", Äfoo.Äbar(33))
+-	fmt.Printf("Äblix.Äbar(33) returns %v\n", Äblix.Äbar(33))
+-}
