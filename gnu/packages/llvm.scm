@@ -1201,10 +1201,10 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 ;; Default LLVM and Clang version.
-(define-public llvm llvm-13)
-(define-public clang-runtime clang-runtime-13)
-(define-public clang clang-13)
-(define-public clang-toolchain clang-toolchain-13)
+(define-public llvm llvm-14)
+(define-public clang-runtime clang-runtime-14)
+(define-public clang clang-14)
+(define-public clang-toolchain clang-toolchain-14)
 
 (define-public llvm-for-rocm
   (package
@@ -1710,6 +1710,9 @@ setup(name=\"clang\", packages=[\"clang\"])\n")))))
 
 (define-public python-clang-13
   (clang-python-bindings clang-13))
+
+(define-public python-clang-14
+  (clang-python-bindings clang-14))
 
 (define-public emacs-clang-format
   (package
