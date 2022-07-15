@@ -615,6 +615,7 @@ everything from small to very large projects with speed and efficiency.")
            (delete 'install-subtree)
            (delete 'install-credential-netrc)
            (delete 'install-credential-libsecret)
+           (delete 'install-info-manual)
            (add-after 'install 'remove-unusable-perl-commands
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
