@@ -45,6 +45,8 @@
               (base32
                "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))
     (native-inputs (list boost
                          `(,pcre "bin") ;for 'pcre-config'
                          ;; The following are for tests and examples:
