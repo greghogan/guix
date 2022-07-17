@@ -165,6 +165,7 @@ using the CMake build system.")
     (build-system gnu-build-system)
     (arguments
      (list
+      #:tests? #f
       #:test-target "test"
       #:configure-flags
       #~(let ((parallel-job-count (number->string (parallel-job-count))))
@@ -288,6 +289,7 @@ and workspaces that can be used in the compiler environment of your choice.")
     (build-system cmake-build-system)
     (arguments
      (list
+      #:tests? #f
       #:configure-flags
       #~(list "-DCMAKE_USE_SYSTEM_LIBRARIES=ON"
               (string-append "-DCMAKE_DOC_DIR=share/doc/cmake-"
