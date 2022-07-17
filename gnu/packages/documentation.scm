@@ -198,7 +198,8 @@ markup) can be customized and extended by the user.")
                                         ".src.tar.gz")))
               (sha256
                (base32
-                "0dqzgci82z950pzg6cpxvvqwybi2031flml3pj47hayhq3c9qpm1"))))
+                "0dqzgci82z950pzg6cpxvvqwybi2031flml3pj47hayhq3c9qpm1"))
+              (patches (search-patches "doxygen-fix-build-error.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      (list bison
