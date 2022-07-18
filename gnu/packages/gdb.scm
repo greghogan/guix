@@ -47,14 +47,14 @@
 (define-public gdb-11
   (package
     (name "gdb")
-    (version "11.1")
+    (version "12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "151z6d0265hv9cgx9zqqa4bd6vbp20hrljhd6bxl7lr0gd0crkyc"))))
+                "1vczsqcbh5y0gx7qrclpna0qzx26sk7lra6y8qzxam1biyzr65qf"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
