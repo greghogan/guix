@@ -718,6 +718,7 @@ the store.")
              (base32
               "0bpm1kfi09dxl4c6aanc5c9951fmf6ckkzay60cx7k37dcpp68si"))
             (patches (search-patches "glibc-dl-cache.patch"
+                                     "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
