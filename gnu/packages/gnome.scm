@@ -4333,7 +4333,8 @@ passwords in the GNOME keyring.")
                 "048k5c6c6y7jyb961krnrb7m0kghr0yrkpnfx3j5ckbx652yfkc8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:configure-flags '("--enable-coverage")
+     '(#:tests? #f
+       #:configure-flags '("--enable-coverage")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook-xml
