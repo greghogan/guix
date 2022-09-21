@@ -109,12 +109,16 @@
                        '()))))
       (format #t "test suite not run~%")))
 
+(define* (install #:rest args)
+  (invoke "cmake" "--install" "."))
+
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
     (replace 'build build)
     (replace 'check check)
-    (replace 'configure configure)))
+    (replace 'configure configure)
+    (replace 'install install)))
 
 (define* (cmake-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)
