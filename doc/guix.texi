@@ -9623,6 +9623,10 @@ parameter specifies in abstract terms the flags passed to the compiler;
 it defaults to @code{"RelWithDebInfo"} (short for ``release mode with
 debugging information''), which roughly means that code is compiled with
 @code{-O2 -g}, as is the case for Autoconf-based packages by default.
+The @code{#:generator} parameter configures the native build system; it
+defaults to @code{"Unix Makefiles"} and can be changed to an alternative
+such as @code{Ninja} (the alternative generator must be available as
+both a module and native input).
 @end defvar
 
 @defvar composer-build-system
