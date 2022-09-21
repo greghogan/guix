@@ -109,6 +109,9 @@
                        '()))))
       (format #t "test suite not run~%")))
 
+(define* (install #:rest args)
+  (invoke "cmake" "--install" "."))
+
 (define %standard-phases
   ;; Everything is as with the GNU Build System except for the `configure'
   ;; and 'check' phases.
@@ -116,7 +119,8 @@
     (delete 'bootstrap)
     (replace 'build build)
     (replace 'check check)
-    (replace 'configure configure)))
+    (replace 'configure configure)
+    (replace 'install install)))
 
 (define* (cmake-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)
