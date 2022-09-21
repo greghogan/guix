@@ -34,7 +34,7 @@
 ;; Code:
 
 (define* (configure #:key outputs (configure-flags '()) (out-of-source? #t)
-                    build-type target
+                    build-type target generator
                     #:allow-other-keys)
   "Configure the given package."
   (let* ((out        (assoc-ref outputs "out"))
@@ -50,6 +50,9 @@
     (format #t "build directory: ~s~%" (getcwd))
 
     (let ((args `(,srcdir
+                  ,@(if generator
+                        (list (string-append "-G" generator))
+                        '())
                   ,@(if build-type
                         (list (string-append "-DCMAKE_BUILD_TYPE="
                                              build-type))
