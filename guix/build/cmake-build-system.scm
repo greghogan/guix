@@ -81,6 +81,14 @@
       (format #t "running 'cmake' with arguments ~s~%" args)
       (apply invoke "cmake" args))))
 
+(define* (build #:key (parallel-build? #t) #:allow-other-keys)
+  (apply invoke "cmake"
+         `("--build"
+           "."
+           ,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '()))))
+
 (define %test-suite-log-regexp
   ;; Name of test suite log files as commonly found in CMake.
   "^LastTestFailed\\.log$")
@@ -106,6 +114,7 @@
   ;; and 'check' phases.
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
+    (replace 'build build)
     (replace 'check check)
     (replace 'configure configure)))
 
