@@ -92,6 +92,7 @@
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
@@ -13505,3 +13506,102 @@ library bevacqua/fuzzysearch.")
 ;;; of a merge conflict, place them above by existing packages with similar
 ;;; functionality or similar names.
 ;;;
+
+(define-public go-github-com-cli-safeexec
+  (package
+    (name "go-github-com-cli-safeexec")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cli/safeexec")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0j6hspjx9kyxn98nbisawx6wvbi1d6rpzr6p2rzhllm673wibwr3"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cli/safeexec"))
+    (home-page "https://github.com/cli/safeexec")
+    (synopsis "safeexec")
+    (description
+     "This package provides a Go module that provides a stabler alternative to
+@@code{exec.LookPath()} that:")
+    (license license:bsd-2)))
+
+(define-public go-go-uber-org-goleak
+  (package
+    (name "go-go-uber-org-goleak")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uber-go/goleak")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1lpqw7ygffak8qki9i4vw8b99l25l8jrw8iwcplqsclk6fzkl24p"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:tests? #f
+       #:import-path "go.uber.org/goleak"))
+    (propagated-inputs `(("go-gopkg-in-yaml-v3" ,go-gopkg-in-yaml-v3)
+                         ("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)
+                         ("go-golang-org-x-tools" ,go-golang-org-x-tools)
+                         ("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)
+                         ("go-github-com-kr-pretty" ,go-github-com-kr-pretty)
+                         ("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)
+                         ("go-golang-org-x-lint" ,go-golang-org-x-lint)
+                         ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://go.uber.org/goleak")
+    (synopsis "goleak")
+    (description "Package goleak is a Goroutine leak detector.")
+    (license license:expat)))
+
+(define-public git-sizer
+  (package
+    (name "git-sizer")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/github/git-sizer")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1b4sl4djnfaxwph41y4bh9yal4bpd1nz4403ryp7nzna7h2x0zis"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/github/git-sizer"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("src/github.com/github/git-sizer/git_sizer_test.go")
+               (("bin/git-sizer")
+                (string-append (assoc-ref outputs "out")
+                               "/bin/git-sizer")))))
+         (replace 'check
+           (lambda* (#:key import-path #:allow-other-keys)
+             (for-each (lambda (test)
+                         ;; TestExec and TestSubmodule require a copy of the Git repository.
+                         (invoke "go" "test" "-v" "-run" test import-path))
+                       '("TestBomb" "TestFromSubdir" "TestRefgroups"
+                         "TestRefSelections" "TestTaggedTags")))))))
+    (native-inputs (list git))
+    (propagated-inputs `(("go-gopkg-in-yaml-v3" ,go-gopkg-in-yaml-v3)
+                         ("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)
+                         ("go-golang-org-x-sync" ,go-golang-org-x-sync)
+                         ("go-go-uber-org-goleak" ,go-go-uber-org-goleak)
+                         ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+                         ("go-github-com-spf13-pflag" ,go-github-com-spf13-pflag)
+                         ("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)
+                         ("go-github-com-cli-safeexec" ,go-github-com-cli-safeexec)))
+    (home-page "https://github.com/github/git-sizer")
+    (synopsis "git-sizer")
+    (description "—Linus Tolstoy")
+    (license license:expat)))
