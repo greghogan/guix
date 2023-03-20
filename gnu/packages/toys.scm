@@ -426,6 +426,38 @@ and various scenery elements.")
     (description "@code{Xpenguins} is a vintage application for Unix systems, showing penguins running, flying, falling etc. on the desktop, using windows as run paths.")
     (license license:gpl3+)))
 
+(define-public xfishtank
+  (package
+    (name "xfishtank")
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+              "https://ratrabbit.nl/downloads/xfishtank/xfishtank-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0jbx41kdpgm3nrnrvfy9znkipd8xq0jj5plavcsjkhkva8ybc0ax"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-install-path
+           (lambda _
+             ;; Install program to bin instead of games.
+             (substitute* "src/Makefile.in"
+               (("(gamesdir = \\$\\(exec_prefix\\)/)games" _ prefix)
+                (string-append prefix "bin")))
+             #t)))))
+    (inputs
+     (list gtk+ libx11 libxpm libxt libxml2))
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://www.ratrabbit.nl/ratrabbit/xfishtank")
+    (synopsis "Let fishes swim over your desktop!")
+    (description "@code{Xfishtank} is a well-known vintage application for Unix systems, based on the X11 protocol. It shows fishes swimming over the desktop.")
+    (license license:gpl3+)))
+
 (define-public nyancat
   (package
     (name "nyancat")
