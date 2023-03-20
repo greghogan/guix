@@ -394,6 +394,38 @@ the desktop background.  Additional customizable effects include wind, stars
 and various scenery elements.")
     (license license:gpl3+)))
 
+(define-public xpenguins
+  (package
+    (name "xpenguins")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://ratrabbit.nl/downloads/xpenguins/xpenguins-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "03qwc7gf21d2ixkrxxwwgayj6f5fv1kg4b7ggx90j5269il63adm"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-install-path
+           (lambda _
+             ;; Install program to bin instead of games.
+             (substitute* "src/Makefile.in"
+               (("(gamesdir = \\$\\(exec_prefix\\)/)games" _ prefix)
+                (string-append prefix "bin")))
+             #t)))))
+    (inputs
+     (list gtk+ libx11 libxpm libxt libxml2))
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://www.ratrabbit.nl/ratrabbit/xpenguins/index.html")
+    (synopsis "Let penguins take over your desktop!")
+    (description "@code{Xpenguins} is a vintage application for Unix systems, showing penguins running, flying, falling etc. on the desktop, using windows as run paths.")
+    (license license:gpl3+)))
+
 (define-public nyancat
   (package
     (name "nyancat")
