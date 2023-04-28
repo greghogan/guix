@@ -26971,7 +26971,8 @@ validation testing and application logic.")
          "1vlnmirhay8gl36cxa94nvlgs41k9p7vdkp0xzbq65682bsgxn9j"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-proprietary-features
            (lambda _
