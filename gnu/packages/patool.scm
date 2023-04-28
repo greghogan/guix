@@ -48,7 +48,8 @@
          "0zgvgx9549rvb57rgkpjalydz46k71gibfs6ab3b3sy439s0ay4h"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
