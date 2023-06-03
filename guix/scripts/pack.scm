@@ -8,6 +8,7 @@
 ;;; Copyright © 2020, 2021, 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2022 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2023 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix scripts)
   #:use-module (guix ui)
   #:use-module (guix gexp)
+  #:use-module ((guix build utils) #:select (%xz-parallel-args))
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
@@ -53,6 +55,8 @@
   #:use-module ((gnu packages compression) #:hide (zip))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages shells)
+  #:autoload   (gnu packages package-management) (guix)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:autoload   (gnu packages guile) (guile2.0-json guile-json)
   #:use-module (srfi srfi-1)
@@ -67,6 +71,7 @@
             debian-archive
             rpm-archive
             docker-image
+            docker-layered-image
             squashfs-image
 
             %formats
@@ -502,12 +507,15 @@ added to the pack."
                        localstatedir?
                        (symlinks '())
                        (archiver tar)
-                       (extra-options '()))
+                       (extra-options '())
+                       layered-image?)
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
 must a be a GNU triplet and it is used to derive the architecture metadata in
-the image.  EXTRA-OPTIONS may contain the IMAGE-TAG keyword argument."
+the image.  EXTRA-OPTIONS may contain the IMAGE-TAG keyword argument. If
+LAYERED-IMAGE? is true, the image will with many of the store paths being on
+their own layer to improve sharing between images."
   (define database
     (and localstatedir?
          (file-append (store-database (list profile))
@@ -558,7 +566,13 @@ the image.  EXTRA-OPTIONS may contain the IMAGE-TAG keyword argument."
               `((directory "/tmp" ,(getuid) ,(getgid) #o1777)
                 ,@(append-map symlink->directives '#$symlinks)))
 
-            (setenv "PATH" #+(file-append archiver "/bin"))
+            (setenv "PATH"
+                    (string-join `(#+(file-append archiver "/bin")
+                                   #+@(if layered-image?
+                                          (list (file-append coreutils "/bin")
+                                                (file-append gzip "/bin"))
+                                          '()))
+                                 ":"))
 
             (let-keywords '#$extra-options #f
                           ((image-tag #f))
@@ -583,13 +597,41 @@ the image.  EXTRA-OPTIONS may contain the IMAGE-TAG keyword argument."
                                   #:compressor
                                   #+(compressor-command compressor)
                                   #:creation-time
-                                  (make-time time-utc 0 1)))))))
+                                  (make-time time-utc 0 1)
+                                  #:layered-image? #$layered-image?))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
                     #:target target
                     #:references-graphs `(("profile" ,profile))))
+
+(define* (docker-layered-image name profile
+                               #:key target
+                               (profile-name "guix-profile")
+                               (compressor (first %compressors))
+                               entry-point
+                               localstatedir?
+                               (symlinks '())
+                               (archiver tar)
+                               (extra-options '())
+                               (layered-image? #t))
+  "Return a derivation to construct a Docker image of PROFILE.  The image is a
+tarball conforming to the Docker Image Specification, compressed with
+COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it must a
+be a GNU triplet and it is used to derive the architecture metadata in the
+image.  If LAYERED-IMAGE? is true, the image will with many of the store paths
+being on their own layer to improve sharing between images."
+  (docker-image name profile
+                #:target target
+                #:profile-name profile-name
+                #:compressor compressor
+                #:entry-point entry-point
+                #:localstatedir? localstatedir?
+                #:symlinks symlinks
+                #:archiver archiver
+                #:extra-options extra-options
+                #:layered-image? layered-image?))
 
 
 ;;;
@@ -1267,6 +1309,7 @@ last resort for relocation."
   `((tarball . ,self-contained-tarball)
     (squashfs . ,squashfs-image)
     (docker  . ,docker-image)
+    (docker-layered  . ,docker-layered-image)
     (deb . ,debian-archive)
     (rpm . ,rpm-archive)))
 
@@ -1275,15 +1318,17 @@ last resort for relocation."
   (display (G_ "The supported formats for 'guix pack' are:"))
   (newline)
   (display (G_ "
-  tarball       Self-contained tarball, ready to run on another machine"))
+  tarball        Self-contained tarball, ready to run on another machine"))
   (display (G_ "
-  squashfs      Squashfs image suitable for Singularity"))
+  squashfs       Squashfs image suitable for Singularity"))
   (display (G_ "
-  docker        Tarball ready for 'docker load'"))
+  docker         Tarball ready for 'docker load'"))
   (display (G_ "
-  deb           Debian archive installable via dpkg/apt"))
+  docker-layered Tarball with a layered image ready for 'docker load'"))
   (display (G_ "
-  rpm           RPM archive installable via rpm/yum"))
+  deb            Debian archive installable via dpkg/apt"))
+  (display (G_ "
+  rpm            RPM archive installable via rpm/yum"))
   (newline))
 
 (define (required-option symbol)

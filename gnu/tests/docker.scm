@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019-2023 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2023 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,8 @@
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
   #:export (%test-docker
-            %test-docker-system))
+            %test-docker-system
+            %test-docker-layered-system))
 
 (define %docker-os
   (simple-operating-system
@@ -315,4 +317,20 @@ docker-image} inside Docker.")
                                    ;; reduce space requirements.
                                    (locale-libcs (list glibc)))
                                  #:type docker-image-type)))
+                 run-docker-system-test)))))
+
+(define %test-docker-layered-system
+  (system-test
+   (name "docker-layered-system")
+   (description "Run a system image as produced by @command{guix system
+docker-layered-image} inside Docker.")
+   (value (with-monad %store-monad
+            (>>= (lower-object
+                  (system-image (os->image
+                                 (operating-system
+                                   (inherit (simple-operating-system))
+                                   ;; Use locales for a single libc to
+                                   ;; reduce space requirements.
+                                   (locale-libcs (list glibc)))
+                                 #:type docker-layered-image-type)))
                  run-docker-system-test)))))

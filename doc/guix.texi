@@ -56,7 +56,7 @@ Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018, 2019, 2020, 2023 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
-Copyright @copyright{} 2018, 2021 Oleg Pykhalov@*
+Copyright @copyright{} 2018, 2021, 2023 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018, 2019 Gábor Boskovits@*
@@ -7153,9 +7153,15 @@ the following command:
 guix pack -f docker -S /bin=bin guile guile-readline
 @end example
 
+or
+
+@example
+guix pack -f docker-layered -S /bin=bin guile guile-readline
+@end example
+
 @noindent
-The result is a tarball that can be passed to the @command{docker load}
-command, followed by @code{docker run}:
+The result is a tarball with image or layered image that can be passed
+to the @command{docker load} command, followed by @code{docker run}:
 
 @example
 docker load < @var{file}
@@ -45650,6 +45656,8 @@ one or multiple partitions.
 
 @item @code{docker}, a Docker image.
 
+@item @code{docker-layered}, a layered Docker image.
+
 @item @code{iso9660}, an ISO-9660 image.
 
 @item @code{tarball}, a tar.gz image archive.
@@ -46008,6 +46016,10 @@ Build an image based on the @code{iso9660-image} image but with the
 
 @defvar docker-image-type
 Build an image based on the @code{docker-image} image.
+@end defvar
+
+@defvar docker-layered-image-type
+Build a layered image based on the @code{docker-layered-image} image.
 @end defvar
 
 @defvar raw-with-offset-image-type

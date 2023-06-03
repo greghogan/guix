@@ -11,6 +11,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2022 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2023 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -730,13 +731,15 @@ checking this by themselves in their 'check' procedure."
                                               #:graphic? graphic?
                                               #:disk-image-size image-size
                                               #:mappings mappings))
-      ((image disk-image vm-image docker-image)
+      ((image disk-image vm-image docker-image docker-layered-image)
        (when (eq? action 'disk-image)
          (warning (G_ "'disk-image' is deprecated: use 'image' instead~%")))
        (when (eq? action 'vm-image)
          (warning (G_ "'vm-image' is deprecated: use 'image' instead~%")))
        (when (eq? action 'docker-image)
          (warning (G_ "'docker-image' is deprecated: use 'image' instead~%")))
+       (when (eq? action 'docker-layered-image)
+         (warning (G_ "'docker-layered-image' is deprecated: use 'image' instead~%")))
        (lower-object (system-image image))))))
 
 (define (maybe-suggest-running-guix-pull)
@@ -984,6 +987,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "\
    docker-image     build a Docker image\n"))
   (display (G_ "\
+   docker-layered-image build a Docker layered image\n"))
+  (display (G_ "\
    init             initialize a root file system to run GNU\n"))
   (display (G_ "\
    extension-graph  emit the service extension graph in Dot format\n"))
@@ -1194,7 +1199,7 @@ Some ACTIONS support additional ARGS.\n"))
                   "list-generations" "describe"
                   "delete-generations" "roll-back"
                   "switch-generation" "search" "edit"
-                  "docker-image"))
+                  "docker-image" "docker-layered-image"))
 
 (define (process-action action args opts)
   "Process ACTION, a sub-command, with the arguments are listed in ARGS.
@@ -1243,6 +1248,8 @@ resulting from command-line parsing."
          (image       (let* ((image-type (case action
                                            ((vm-image) qcow2-image-type)
                                            ((docker-image) docker-image-type)
+                                           ((docker-layered-image)
+                                            docker-layered-image-type)
                                            (else image-type)))
                             (image-size (assoc-ref opts 'image-size))
                             (volatile?

@@ -5,6 +5,7 @@
 ;;; Copyright © 2022 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;; Copyright © 2022 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2023 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
             efi-disk-image
             iso9660-image
             docker-image
+            docker-layered-image
             tarball-image
             wsl2-image
             raw-with-offset-disk-image
@@ -94,6 +96,7 @@
             iso-image-type
             uncompressed-iso-image-type
             docker-image-type
+            docker-layered-image-type
             tarball-image-type
             wsl2-image-type
             raw-with-offset-image-type
@@ -190,6 +193,10 @@ parent image record."
   (image-without-os
    (format 'docker)))
 
+(define docker-layered-image
+  (image-without-os
+   (format 'docker-layered)))
+
 (define tarball-image
   (image-without-os
    (format 'tarball)))
@@ -269,6 +276,11 @@ set to the given OS."
   (image-type
    (name 'docker)
    (constructor (cut image-with-os docker-image <>))))
+
+(define docker-layered-image-type
+  (image-type
+   (name 'docker-layered)
+   (constructor (cut image-with-os docker-layered-image <>))))
 
 (define tarball-image-type
   (image-type
@@ -683,9 +695,12 @@ returns an image record where the first partition's label is set to <label>."
 
 (define* (system-docker-image image
                               #:key
-                              (name "docker-image"))
+                              (name "docker-image")
+                              (archiver tar)
+                              layered-image?)
   "Build a docker image for IMAGE.  NAME is the base name to use for the
-output file."
+output file.  If LAYERED-IMAGE? is true, the image will with many of the store
+paths being on their own layer to improve sharing between images."
   (define boot-program
     ;; Program that runs the boot script of OS, which in turn starts shepherd.
     (program-file "boot-program"
@@ -728,9 +743,11 @@ output file."
               (use-modules (guix docker)
                            (guix build utils)
                            (gnu build image)
+                           (srfi srfi-1)
                            (srfi srfi-19)
                            (guix build store-copy)
-                           (guix store database))
+                           (guix store database)
+                           (ice-9 receive))
 
               ;; Set the SQL schema location.
               (sql-schema #$schema)
@@ -750,18 +767,31 @@ output file."
                                            #:register-closures? #$register-closures?
                                            #:deduplicate? #f
                                            #:system-directory #$os)
-                (build-docker-image
-                 #$output
-                 (cons* image-root
-                        (map store-info-item
-                             (call-with-input-file #$graph
-                               read-reference-graph)))
-                 #$os
-                 #:entry-point '(#$boot-program #$os)
-                 #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
-                 #:creation-time (make-time time-utc 0 1)
-                 #:system #$image-target
-                 #:transformations `((,image-root -> ""))))))))
+                (when #$layered-image?
+                  (setenv "PATH"
+                          (string-join (list #+(file-append archiver "/bin")
+                                             #+(file-append coreutils "/bin")
+                                             #+(file-append gzip "/bin"))
+                                       ":")))
+                (apply build-docker-image
+                       (append (list #$output
+                                     (append (if #$layered-image?
+                                                 '()
+                                                 (list image-root))
+                                             (map store-info-item
+                                                  (call-with-input-file #$graph
+                                                    read-reference-graph)))
+                                     #$os
+                                     #:entry-point '(#$boot-program #$os)
+                                     #:compressor
+                                     '(#+(file-append gzip "/bin/gzip") "-9n")
+                                     #:creation-time (make-time time-utc 0 1)
+                                     #:system #$image-target
+                                     #:transformations `((,image-root -> "")))
+                               (if #$layered-image?
+                                   (list #:root-system image-root
+                                         #:layered-image? #$layered-image?)
+                                   '()))))))))
 
     (computed-file name builder
                    ;; Allow offloading so that this I/O-intensive process
@@ -769,6 +799,18 @@ output file."
                    #:local-build? #f
                    #:options `(#:references-graphs ((,graph ,os))
                                #:substitutable? ,substitutable?))))
+
+(define* (system-docker-layered-image image
+                                      #:key
+                                      (name "docker-image")
+                                      (archiver tar)
+                                      (layered-image? #t))
+  "Build a docker image for IMAGE.  NAME is the base name to use for the
+output file."
+  (system-docker-image image
+                       #:name name
+                       #:archiver archiver
+                       #:layered-image? layered-image?))
 
 
 ;;;
@@ -861,7 +903,7 @@ output file."
   "Return the IMAGE root partition file-system type."
   (case (image-format image)
     ((iso9660) "iso9660")
-    ((docker tarball wsl2) "dummy")
+    ((docker docker-layered tarball wsl2) "dummy")
     (else
      (partition-file-system (find-root-partition image)))))
 
@@ -998,6 +1040,8 @@ image, depending on IMAGE format."
                                        ("bootcfg" ,bootcfg))))
        ((memq image-format '(docker))
         (system-docker-image image*))
+       ((memq image-format '(docker-layered))
+        (system-docker-layered-image image*))
        ((memq image-format '(tarball))
         (system-tarball-image image*))
        ((memq image-format '(wsl2))
