@@ -23,6 +23,7 @@
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-34)
   #:export (%standard-phases
             cmake-build))
 
@@ -77,12 +78,25 @@
       (format #t "running 'cmake' with arguments ~s~%" args)
       (apply invoke "cmake" args))))
 
-(define* (check #:key (tests? #t) (parallel-tests? #t) (test-target "test")
+(define %test-suite-log-regexp
+  ;; Name of test suite log files as commonly found in CMake.
+  "^LastTestFailed\\.log$")
+
+(define* (check #:key (tests? #t) (parallel-tests? #t)
+                (test-suite-log-regexp %test-suite-log-regexp)
                 #:allow-other-keys)
-  (let ((gnu-check (assoc-ref gnu:%standard-phases 'check)))
-    (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-    (gnu-check #:tests? tests? #:test-target test-target
-              #:parallel-tests? parallel-tests?)))
+  (if tests?
+      (guard (c ((invoke-error? c)
+                 ;; Dump the test suite log to facilitate debugging.
+                 (display "\nTest suite failed, dumping logs.\n"
+                          (current-error-port))
+                 (gnu:dump-file-contents "." test-suite-log-regexp)
+                 (raise c)))
+        (apply invoke "ctest" "--output-on-failure"
+               `(,@(if parallel-tests?
+                       `("-j" ,(number->string (parallel-job-count)))
+                       '()))))
+      (format #t "test suite not run~%")))
 
 (define %standard-phases
   ;; Everything is as with the GNU Build System except for the `configure'
