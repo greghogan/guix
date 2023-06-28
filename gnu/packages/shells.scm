@@ -243,6 +243,11 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                 port)
                (close-port port))
              #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Test artifacts and actions are built with the 'test' target.
+               (invoke "make" "test"))))
          ;; Use fish-foreign-env to source /etc/profile.
          (add-before 'install 'source-etc-profile
            (lambda* (#:key inputs #:allow-other-keys)
