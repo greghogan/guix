@@ -245,6 +245,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages rust-apps)
@@ -27052,6 +27053,26 @@ containing a given point, and quadkey conversion functions
 @code{quadkey(xtile, ytile, zoom)} and @code{quadkey_to_tile(quadkey)} for
 translating between quadkey and tile coordinates.")
     (license license:bsd-3)))
+
+(define-public python-xgt
+  (package
+    (name "python-xgt")
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "xgt" version))
+              (sha256
+               (base32
+                "04qrf94zkfpl67h3zaby3g4qghb0ijpwcy3q6dqay1wg91w7nb7z"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-grpcio python-isodate python-protobuf
+                             python-pyarrow))
+    (home-page "http://www.trovares.com/")
+    (synopsis
+     "The Python interface to the Trovares xGT graph analytics engine.")
+    (description
+     "The Python interface to the Trovares xGT graph analytics engine.")
+    (license license:asl2.0)))
 
 (define-public python-xyzservices
   (package
