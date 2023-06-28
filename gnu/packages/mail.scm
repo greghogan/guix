@@ -903,13 +903,14 @@ mailpack.  What can alterMIME do?
              (("\\\\n\\.\\.\\.") "\\n...\\n"))))))
     (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
+     `(#:parallel-tests? #f
+       #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                   (guix build utils)
                   (ice-9 match))
        #:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%cmake-build-system-modules)
-       #:configure-flags (list "-GNinja")
+       #:generator "Ninja"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-markdown-test
@@ -920,23 +921,12 @@ mailpack.  What can alterMIME do?
            (lambda _
              (substitute* "tests/CMakeLists.txt"
                ((".*markdown.*") ""))))
-         (replace 'build
-           (lambda _
-             (invoke "ninja" "-j" (number->string (parallel-job-count)))))
          (add-before 'check 'start-xserver
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xorg-server (assoc-ref inputs "xorg-server")))
                (setenv "HOME" (getcwd))
                (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
                (setenv "DISPLAY" ":1"))))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-               (invoke "ctest" "."))))
-         (replace 'install
-           (lambda _
-             (invoke "ninja" "install")))
          (add-after 'install 'wrap-with-GI_TYPELIB_PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
