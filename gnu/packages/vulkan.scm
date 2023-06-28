@@ -266,6 +266,7 @@ interpretation of the specifications for these languages.")
       ;; Limit the tests to those architectures tested upstream.
       #:tests? (and (%current-system)
                     (target-x86?))
+      #:parallel-tests? #f
       #:configure-flags
       #~(list (string-append "-DVULKAN_HEADERS_INSTALL_DIR="
                              (dirname (dirname
