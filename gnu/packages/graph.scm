@@ -125,8 +125,14 @@ distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
        (sha256
         (base32 "1z1ay3l1h64jc2igbl2ibvi20sswy56v2yk3ykhis7jzijsh0mxa"))))
     (build-system cmake-build-system)
-    (arguments (list #:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON")
-                     #:test-target "check"))
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "check")))))))
     (native-inputs (list pkg-config))
     (inputs
      (list arpack-ng
