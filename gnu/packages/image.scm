@@ -1370,8 +1370,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
         ("python-nose" ,python-nose)
         ("sphinx" ,python-sphinx)))
      (arguments
-      `(#:test-target "check"
-        #:phases
+      `(#:phases
         (modify-phases %standard-phases
           (add-after 'unpack 'disable-broken-tests
             (lambda _
@@ -1382,7 +1381,11 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
               ;; <https://github.com/ukoethe/vigra/issues/436>.
               (substitute* "vigranumpy/test/CMakeLists.txt"
                 (("test1\\.py") ""))
-              #t)))
+              #t))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "make" "check")))))
         #:configure-flags
           (list "-Wno-dev" ; suppress developer mode with lots of warnings
                 (string-append "-DVIGRANUMPY_INSTALL_DIR="
