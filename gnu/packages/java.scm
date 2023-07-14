@@ -11059,7 +11059,7 @@ algorithms and xxHash hashing algorithm.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1449q7fyh03s1q0bqljcrhgacwcyqmg2bbvb3z084avgapwsainz"))
+                "0ycdm2l0cwcpzh1zab3hbb21qcfx9n4lgh0v467ybn61cg0wmya6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
