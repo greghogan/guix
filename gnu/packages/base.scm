@@ -792,27 +792,19 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.35")
-   (replacement glibc/fixed)
+   (version "2.38")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "0bpm1kfi09dxl4c6aanc5c9951fmf6ckkzay60cx7k37dcpp68si"))
+              "1lizxxqbfma5zgmcj0gk5iyk171f2nfvdhbv8rjrkcmjk24rk0pv"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
-                                     "glibc-ldd-x86_64.patch"
+                                     "glibc-2.37-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
-                                     "glibc-versioned-locpath.patch"
-                                     "glibc-allow-kernel-2.6.32.patch"
+                                     "glibc-2.37-versioned-locpath.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
-                                     "glibc-supported-locales.patch"
-                                     "glibc-cross-objdump.patch"
-                                     "glibc-cross-objcopy.patch" ;must come 2nd
-                                     "glibc-hurd-clock_t_centiseconds.patch"
-                                     "glibc-hurd-clock_gettime_monotonic.patch"
-                                     "glibc-hurd-mach-print.patch"
-                                     "glibc-hurd-gettyent.patch"))))
+                                     "glibc-supported-locales.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -883,6 +875,10 @@ the store.")
             (string-append "BASH_SHELL="
                            (assoc-ref %build-inputs "bash")
                            "/bin/bash")
+
+            ;; libcrypt is no longer built by default as of 2.38 and is likely
+            ;; to be removed in a future release.
+            "-enable-crypt"
 
             ;; On GNU/Hurd we get discarded-qualifiers warnings for
             ;; 'device_write_inband' among other things.  Ignore them.
@@ -1101,11 +1097,18 @@ with the Linux kernel.")
                (base32
                 "1zvp0qdfbdyqrzydz18d9zg3n5ygy8ps7cmny1bvsp8h1q05c99f"))
               (patches
-               (cons (search-patch "glibc-2.33-riscv64-miscompilation.patch")
+               (cons (search-patch "glibc-2.33-riscv64-miscompilation.patch"
+                                   "glibc-ldd-x86_64.patch"
+                                   "glibc-versioned-locpath.patch"
+                                   "glibc-allow-kernel-2.6.32.patch"
+                                   "glibc-cross-objdump.patch"
+                                   "glibc-cross-objcopy.patch") ;must come 2nd
                      ;; Remove a patch that's become irrelevant and that does not
                      ;; apply to this version.
                      (remove (lambda (patch)
                                (string=? (basename patch)
+                                         "glibc-2.37-ldd-x86_64.patch"
+                                         "glibc-2.37-versioned-locpath.patch"
                                          "glibc-hurd-clock_gettime_monotonic.patch"))
                              (origin-patches (package-source glibc)))))))
     (arguments
