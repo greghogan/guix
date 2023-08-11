@@ -109,15 +109,13 @@ It is aimed at use in, for example, cryptography and computational algebra.")
                      "14yr4sf4mys64nzbgnd997l6l4n8l9vsjnnvnb0lh4jh2ggpi8q6"))))
    (arguments
     (list
-     #:phases (if (system-hurd?)
-                  #~(modify-phases %standard-phases
-                      (add-after 'unpack 'skip-tests
-                        (lambda _
-                          (substitute*
-                              "tests/tsprintf.c"
-                            (("(^| )main *\\(.*" all)
-                             (string-append all "{\n  exit (77);//"))))))
-                  #~%standard-phases)))
+     #:phases #~(modify-phases %standard-phases
+                  (add-after 'unpack 'skip-tests
+                    (lambda _
+                      (substitute*
+                          "tests/tsprintf.c"
+                        (("(^| )main *\\(.*" all)
+                         (string-append all "{\n  exit (77);//"))))))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs (list gmp))            ; <mpfr.h> refers to <gmp.h>
