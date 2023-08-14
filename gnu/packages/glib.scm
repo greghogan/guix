@@ -217,7 +217,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
 (define glib
   (package
     (name "glib")
-    (version "2.72.3")
+    (version "2.76.4")
     (source
      (origin
        (method url-fetch)
@@ -226,14 +226,14 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1w25sf2wxkkah2p2w189q58mza3zv8z1fh2q1m82sldq4kva4faa"))
+        (base32 "1njx7556kl9qrnhwp8vx7ih9q1mhl9nfmxvifxm1cvl3jqf1jnjs"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           (substitute* "tests/spawn-test.c"
+           (substitute* "glib/tests/spawn-test.c"
              (("/bin/sh") "sh"))))))
     (build-system meson-build-system)
     (outputs '("out"                    ;libraries, locales, etc
@@ -273,9 +273,16 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                 (substitute* '("unix.c" "utils.c")
                   (("[ \t]*g_test_add_func.*;") "")))
               (with-directory-excursion "gio/tests"
-                (substitute* '("contenttype.c" "gdbus-address-get-session.c"
-                               "gdbus-peer.c" "appinfo.c" "desktop-app-info.c")
-                  (("[ \t]*g_test_add_func.*;") "")))
+                (substitute* '("appinfo.c"
+                               "contenttype.c"
+                               "desktop-app-info.c"
+                               "file.c"
+                               "gdbus-address-get-session.c"
+                               "gdbus-peer.c"
+                               "gdbus-server-auth.c"
+                               "portal-support-snap.c")
+                  ;; Return status code for success or tests skipped.
+                  (("[ \t]*g_test_run.*;") " 0;")))
 
               #$@(if (target-x86-32?)
                      ;; Comment out parts of timer.c that fail on i686 due to
@@ -456,7 +463,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
       python-wrapper))
     (propagated-inputs
      (list libffi             ;in the Requires.private field of gobject-2.0.pc
-           pcre               ;in the Requires.private field of glib-2.0.pc
+           pcre2              ;in the Requires.private field of glib-2.0.pc
            `(,util-linux "lib")  ;for libmount
            zlib))                ;in the Requires.private field of glib-2.0.pc
     (native-search-paths
