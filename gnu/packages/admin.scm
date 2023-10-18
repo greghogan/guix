@@ -5119,7 +5119,7 @@ Netgear devices.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1y4qmc8i7zg2cqrmz38dxbsj8bb2h7jm1zz23gqcdygkgaymwddw"))))
+                "09prpw20ps6cd8qr63glbcip3jrvnnic0m7j1q02g8hjnw8z50ld"))))
     (build-system gnu-build-system)
     (arguments
      (list
