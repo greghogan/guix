@@ -169,7 +169,7 @@ tunneling, and so on.")
                   "0bd8y8v66biyqvg70ka1sdd0aixs6yzpnvfsig907xzh9af2mihn"))
                 (patches (search-patches "curl-use-ssl-cert-env.patch"))))
       (arguments
-       (if (system-hurd?)
+       (if ((or system-hurd? target-arm?))
            (substitute-keyword-arguments (package-arguments curl)
              ((#:phases phases '%standard-phases)
               #~(modify-phases #$phases
