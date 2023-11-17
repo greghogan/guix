@@ -1225,7 +1225,7 @@ ciphers such as ChaCha20, Curve25519, NTRU, and Blake2b.")
   (package
     (name "aws-lc")
     ;; Update only when updating aws-crt-cpp.
-    (version "1.0.2")
+    (version "1.19.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1234,25 +1234,19 @@ ciphers such as ChaCha20, Curve25519, NTRU, and Blake2b.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16y4iy2rqrmb7b1c394wyq7a5vbjb41599524my6b6q1vk1pi307"))))
+                "1pzza1k38ifq3qdvq5f5ad5dcvdd687rdwkl4baxwdn8yz613x6d"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "run_minimal_tests"
        #:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")
+       '("-DBUILD_SHARED_LIBS=ON" "-DDISABLE_GO=ON")
        #:phases
        (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? test-target parallel-tests? #:allow-other-keys)
-             (when tests?
-               ;; SSLTest.HostMatching fails due to an expired certificate.
-               ;; Fake the time to be that of the release.
-               (invoke "faketime" "2022-05-23"
-                       "make" test-target
-                       "-j" (if parallel-tests?
-                                (number->string (parallel-job-count))
-                                "1"))))))))
-    (native-inputs (list libfaketime))
+         (add-after 'unpack 'set-env
+           (lambda _
+             ;; Build fails when HOME=/homeless-shelter.
+             (setenv "HOME" "/tmp"))))))
+    (supported-systems '("aarch64-linux" "x86_64-linux"))
     (synopsis "General purpose cryptographic library")
     (description "AWS libcrypto (aws-lc) contains portable C implementations
 of algorithms needed for TLS and common applications, and includes optimized
