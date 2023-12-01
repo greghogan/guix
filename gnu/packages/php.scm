@@ -219,6 +219,7 @@
                        '("ext/posix/tests/posix_getgrgid.phpt"    ; Requires /etc/group.
                          "ext/posix/tests/posix_getgrnam_basic.phpt" ; Requires /etc/group.
                          "ext/sockets/tests/bug63000.phpt"        ; Fails to detect OS.
+                         "ext/sockets/tests/socket_sendto_zerocopy.phpt"
                          ;; These need exotic locales.
                          "ext/standard/tests/strings/setlocale_basic1.phpt"
                          "ext/standard/tests/strings/setlocale_basic2.phpt"
