@@ -142,7 +142,6 @@ distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
               ;; Use the same integer width as suitesparse-cxsparse, which
               ;; uses int64_t in SuiteSparse v6.0.0 and later.
               "-DIGRAPH_INTEGER_SIZE=64")
-      #:test-target "check"
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'version-file
@@ -174,6 +173,10 @@ distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
           (add-after 'build 'build-doc
             (lambda _
               (invoke "cmake" "--build" "." "--target" "html")))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "make" "check"))))
           (add-after 'install 'install-doc
             (lambda _
               (copy-recursively
