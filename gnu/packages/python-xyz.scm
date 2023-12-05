@@ -6473,7 +6473,7 @@ browser.")
     ;; We link the static abseil libraries here to avoid problems in
     ;; downstream libraries using potentially different variants of
     ;; abseil-cpp.  This is also what's done in the upstream CMake build.
-    (inputs (list pybind11 static-abseil-cpp python))
+    (inputs (list pybind11 static-abseil-cpp-20220623.1 python))
     (propagated-inputs (list python-wheel
                              python-absl-py
                              python-attrs
