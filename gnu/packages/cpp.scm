@@ -1382,15 +1382,14 @@ Google's C++ code base.")
                                    (number->string version))
                   #$flags)))))))
 
-(define (make-static-abseil-cpp version)
-  (let ((base abseil-cpp))
-    (hidden-package
-     (package/inherit base
-       (arguments
-        (substitute-keyword-arguments (package-arguments base)
-          ((#:configure-flags flags)
-           #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
-                    (delete "-DBUILD_SHARED_LIBS=ON" #$flags)))))))))
+(define (make-static-abseil-cpp base)
+  (hidden-package
+   (package/inherit base
+     (arguments
+      (substitute-keyword-arguments (package-arguments base)
+        ((#:configure-flags flags)
+         #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+                  (delete "-DBUILD_SHARED_LIBS=ON" #$flags))))))))
 
 (define-public abseil-cpp-cxxstd17
   (abseil-cpp-for-c++-standard abseil-cpp 17))  ;XXX: the default with GCC 11?
@@ -1400,6 +1399,9 @@ Google's C++ code base.")
 
 (define-public static-abseil-cpp
   (make-static-abseil-cpp abseil-cpp))
+
+(define-public static-abseil-cpp-20220623.1
+  (make-static-abseil-cpp abseil-cpp-20220623.1))
 
 (define-public pegtl
   (package
