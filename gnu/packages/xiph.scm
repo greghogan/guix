@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -351,14 +352,14 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define-public opus
   (package
     (name "opus")
-    (version "1.3.1")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.mozilla.org/pub/opus/opus-"
+              (uri (string-append "https://downloads.xiph.org/releases/opus/opus-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "17gz8kxs4i7icsc1gj713gadiapyklynlwqlf0ai98dj4lg8xdb5"))))
+                "07y5977a7qsqxz72m85pa4lhypsbp43flvpi3wyycnmyad12pcy9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
