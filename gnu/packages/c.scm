@@ -972,7 +972,7 @@ event-driven, asynchronous network application protocols.")
   (package
     (name "aws-c-cal")
     ;; Update only when updating aws-crt-cpp.
-    (version "0.5.17")
+    (version "0.6.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -981,7 +981,7 @@ event-driven, asynchronous network application protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gd7xfzv509vcysifzfa8j2rykkc1prhiry7953snblkzm7airm5"))))
+                "1jl8d5b7w49db2gy0kcqw8piszm7d3qydbb5zy4b43plhyj74cmg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
