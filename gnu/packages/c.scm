@@ -881,7 +881,7 @@ C programming language.")
   (package
     (name "aws-checksums")
     ;; Update only when updating aws-crt-cpp.
-    (version "0.1.12")
+    (version "0.1.17")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -890,7 +890,7 @@ C programming language.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "054f2hkmkxhw83q7zsz349k82xk6bkrvlsab088pf7kn9wd4hy4k"))))
+                "153rwmqmv79lc0ivf489cvarp3x7xf7lg459jrkb5404n6wk109s"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
