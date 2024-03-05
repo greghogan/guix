@@ -54,6 +54,7 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages certs)
   #:use-module (gnu packages check)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
@@ -942,7 +943,7 @@ communication.")
   (package
     (name "aws-c-io")
     ;; Update only when updating aws-crt-cpp.
-    (version "0.10.20")
+    (version "0.14.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -951,7 +952,7 @@ communication.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07l5rfbm1irkigfv51sfygs992af8rxicmay97frbx6z21khdjnr"))))
+                "0421a10p8k1zbzp1fh9cgdikywvjh9l7iszxbzp45bk9zz8cg0g5"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -960,7 +961,7 @@ communication.")
                             (assoc-ref %build-inputs "aws-c-common"))
              "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
-     (list aws-c-cal aws-c-common s2n))
+     (list aws-c-cal aws-c-common nss-certs s2n))
     (synopsis "Event driven framework for implementing application protocols")
     (description "This library provides a C99 framework for constructing
 event-driven, asynchronous network application protocols.")
