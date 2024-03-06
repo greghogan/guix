@@ -352,14 +352,14 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define-public opus
   (package
     (name "opus")
-    (version "1.4")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.xiph.org/releases/opus/opus-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07y5977a7qsqxz72m85pa4lhypsbp43flvpi3wyycnmyad12pcy9"))))
+                "118g6hz58i6qk28d32b3gh4k4dqabrb24am139hpnhcdkfai0imq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
