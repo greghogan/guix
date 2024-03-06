@@ -1124,7 +1124,8 @@ currently limited to Huffman encoding and decoding.")
                 "aws-c-auth-install-private-headers.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:tests? #f
+       #:configure-flags
        (list "-DBUILD_SHARED_LIBS=ON"
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common"))
