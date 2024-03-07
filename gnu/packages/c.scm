@@ -866,7 +866,8 @@ C programming language.")
                 "089grcj58n4xs41kmnpaqpwsalcisjbqqb5yqahxxyfx2lf1j9c9"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:parallel-tests? #f
+       #:configure-flags
        '("-DBUILD_SHARED_LIBS=ON")))
     (synopsis "Amazon Web Services core C library")
     (supported-systems '("i686-linux" "x86_64-linux"))
